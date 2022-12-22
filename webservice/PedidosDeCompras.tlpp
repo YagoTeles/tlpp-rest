@@ -1,0 +1,39 @@
+
+#include 'tlpp-core.th'
+#include 'tlpp-rest.th'
+
+@POST("compras/pedidos-de-compras")
+Function u_PedidosDeComprasPost()
+  //RpcSetEnv("99","01")
+  Local oJson as json
+  Local cQuery := ""
+  Local cSql   := ""
+  Local aResposta := {}
+  Local oFim := JsonObject():new()
+  Local nCount := 1
+
+  cSql := "SELECT C7_ITEM,C7_PRODUTO,C7_QUANT,C7_TOTAL,C7_PRECO,C7_DESCRI FROM "+RetSqlName("SC7")
+  cSql += " WHERE C7_FILIAL = '"+xFilial("SC7")+"' AND D_E_L_E_T_<>'*' "
+
+  cQuery := MPSysOpenQuery(cSql)
+
+  (cQuery)->(DbGoTop())
+
+  While ! (cQuery)->(EoF())
+
+    oJson := {"Preco":(cQuery)->C7_PRECO}
+    oJson["Produto"]    := AllTrim((cQuery)->C7_PRODUTO)
+    oJson["Descricao"]  := AllTrim((cQuery)->C7_DESCRI)
+    oJson["Quantidade"] := (cQuery)->C7_QUANT
+    oJson["Valor"]      := (cQuery)->C7_TOTAL
+    oJson["id"]         := nCount
+    nCount += 1
+    Aadd(aResposta, oJson)
+    (cQuery)->(DbSkip())
+
+  ENDDO
+
+    (cQuery)->(DbCloseArea())
+  oFim:set(aResposta)
+  oRest:setResponse(oFim)
+Return .T.
