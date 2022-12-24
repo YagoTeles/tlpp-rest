@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import { useState,useEffect, useContext } from 'react';
 import { Button } from '@mui/material';
+import StoreContext from '../components/Store/Context';
 
 
 
@@ -11,30 +12,30 @@ const columns = [
   {
     field: 'Produto',
     headerName: 'Produto',
-    width: 150,
+    minWidth: 250,
   },
   {
     field: 'Descricao',
     headerName: 'Descrição',
-    width: 250,
+    minWidth: 400,
   },
   {
     field: 'Quantidade',
     headerName: 'Quantidade',
-    type: 'number',
-    width: 110,
+
+    minWidth: 110,
   },
   {
     field: 'Preco',
     headerName: 'Preço',
-    type: 'number',
-    width: 110,
+    
+    minWidth: 110,
   },
   {
     field: 'Valor',
     headerName: 'Valor Total',
-    type: 'number',
-    width: 110,
+    
+    minWidth: 110,
   },
 ];
 
@@ -42,7 +43,20 @@ const columns = [
 
 function PedidosDeCompras() {
   const [rows, setRows] = useState([]);
-  
+  const { token }= useContext(StoreContext);
+  const [pageTableSize, setPageTableSize] = useState(5)
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    const updateWindowDimensions = () => {
+      const newHeight = window.innerHeight;
+      setHeight(newHeight);
+    };
+    window.addEventListener("resize", updateWindowDimensions);
+    return () => window.removeEventListener("resize", updateWindowDimensions) 
+
+  }, []);
+
   const Teste = async () => {
     try {
         const body = {};
@@ -50,7 +64,7 @@ function PedidosDeCompras() {
         const response = await fetch('http://localhost:8282/rest/compras/pedidos-de-compras',
         {
             method: "POST",
-            headers: { "Content-Type": "application/json", 'Authorization': "Basic " + window.btoa('Yago' + ':' + "123") },
+            headers: { "Content-Type": "application/json", 'Authorization': "Bearer " + token},
             body: JSON.stringify(body),
   
         }
@@ -69,12 +83,19 @@ function PedidosDeCompras() {
   }, []);
   
     return ( 
-    <Box sx={{ height: 400, width: '100%' }}>     
+    <Box sx={{ height: "100%", width: '100%' }}>     
       <DataGrid
+        ref={el => {
+          // el can be null - see https://reactjs.org/docs/refs-and-the-dom.html#caveats-with-callback-refs
+          if (!el) return;
+          
+          console.log(Math.floor(el.getBoundingClientRect().height/64));
+          setPageTableSize((Math.floor(el.getBoundingClientRect().height/68)))
+        }}
         rows={rows}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        pageSize={pageTableSize}
+        rowsPerPageOptions={[pageTableSize]}
         checkboxSelection
         disableSelectionOnClick
         experimentalFeatures={{ newEditingApi: true }}

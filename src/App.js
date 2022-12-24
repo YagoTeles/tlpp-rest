@@ -44,9 +44,7 @@ function App() {
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
         <StoreProvider>
-          
-              <RouteApp/>
-          
+              <RouteApp/>   
          </StoreProvider>   
         </ThemeProvider>  
       </ColorModeContext.Provider>

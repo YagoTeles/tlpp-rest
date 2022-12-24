@@ -21,11 +21,11 @@ Function u_PedidosDeComprasPost()
 
   While ! (cQuery)->(EoF())
 
-    oJson := {"Preco":(cQuery)->C7_PRECO}
+    oJson := {"Preco":"R$ " + CValToChar( TRANSFORM((cQuery)->C7_PRECO,"@E 999,999.99") )}
     oJson["Produto"]    := AllTrim((cQuery)->C7_PRODUTO)
     oJson["Descricao"]  := AllTrim((cQuery)->C7_DESCRI)
     oJson["Quantidade"] := (cQuery)->C7_QUANT
-    oJson["Valor"]      := (cQuery)->C7_TOTAL
+    oJson["Valor"]      := "R$ " + CValToChar(TRANSFORM((cQuery)->C7_TOTAL,"@E 999,999.99"))
     oJson["id"]         := nCount
     nCount += 1
     Aadd(aResposta, oJson)
@@ -36,4 +36,11 @@ Function u_PedidosDeComprasPost()
     (cQuery)->(DbCloseArea())
   oFim:set(aResposta)
   oRest:setResponse(oFim)
+Return .T.
+
+@POST("login/verifica-login")
+Function u_VerificaLogin()
+  Local oJson as json
+  oJson := {"codelogin":"74185296$37896541"}
+  oRest:setResponse(oJson)
 Return .T.

@@ -26,7 +26,8 @@ import { LogoTotvs } from './LogoTotvs';
 import {matchPath, useLocation, useNavigate } from 'react-router-dom';
 import { itens } from './itens';
 
-const drawerWidth = 250;
+
+const drawerWidth = 255;
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -109,9 +110,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function MiniDrawer({ children }) {
   const theme = useTheme();
   const colorMode = React.useContext(ColorModeContext);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen]  = React.useState(true);
   const routeMatch = useRouteMatch(itens.map((item, index) => {return item.route}));
   const currentTab = routeMatch?.pattern?.path;
+  let title = itens.find(e => e.route === currentTab);
+  const navigate = useNavigate();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -140,7 +143,7 @@ export default function MiniDrawer({ children }) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Pedidos de  Compra
+              {title.label}
           </Typography>
 
           <IconButton
@@ -175,10 +178,10 @@ export default function MiniDrawer({ children }) {
           {open ? <Typography variant="h6" noWrap component="div" align='center' sx={{ fontWeight: 'bold',paddingTop:1,paddingBottom:1 }}>Compras</Typography> : <></>}
 
           {itens.map((item, index) => (
-            <ListItem key={item.label} disablePadding sx={{ display: 'block' }}>
+            <ListItem key={item.label} disablePadding sx={{ display: 'block' }} onClick={() => open && navigate(item.route)}>
               <ListItemButton
                 sx={currentTab === item.route ? {minHeight: 48,justifyContent: open ? 'initial' : 'center',px: 2.5,backgroundColor:'action.selected'} : {minHeight: 48,justifyContent: open ? 'initial' : 'center',px: 2.5}}
-                      
+                
               >
                 <ListItemIcon
                   sx={{
@@ -186,6 +189,7 @@ export default function MiniDrawer({ children }) {
                     mr: open ? 3 : 'auto',
                     justifyContent: 'center',
                   }}
+                  
                 >
                   {item.icon}
                 </ListItemIcon>
@@ -226,7 +230,7 @@ export default function MiniDrawer({ children }) {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <Paper elevation={3} >
+        <Paper elevation={3} sx={{width:"95%",height:"80vh"}}>
            {children}
         </Paper>
        
