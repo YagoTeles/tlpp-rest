@@ -22,6 +22,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 function Login() {
     const { register, handleSubmit, formState: { errors }} = useForm();
     const { setToken } = useContext(StoreContext);
+    const { setUser } = useContext(StoreContext);
     const theme = useTheme();
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(false);

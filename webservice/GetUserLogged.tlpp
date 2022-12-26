@@ -1,0 +1,16 @@
+#include 'tlpp-core.th'
+#include 'tlpp-rest.th'
+
+@POST("/login/get-user-logged")
+Function u_getUserLogged()
+  Local oJson as json
+  Local cCodigoUsuario := RetCodUsr()
+  Local cNome := UsrRetName(cCodigoUsuario)
+  Local cEmail := UsrRetMail(cCodigoUsuario)
+
+  oJson  := {"Nome": Alltrim(cNome)}
+  oJson["Codigo"] := AllTrim(cCodigoUsuario)
+  oJson["Email"] := AllTrim(cEmail)
+
+  oRest:setResponse(oJson)
+Return .T.

@@ -7,7 +7,6 @@ import { useContext } from "react";
 const ProtectedRoute = ({ children }) => {
   const {token} = useContext(StoreContext);
   const { setToken } = useContext(StoreContext);
-  const [teste,setTeste] = useState()
   const verificar = async () => {
     try {
         const body = {};
@@ -36,9 +35,7 @@ const ProtectedRoute = ({ children }) => {
 
   else {
      verificar().then(async (response) => {
-      console.log(response.codelogin)
       if (response.codelogin == undefined || response.codelogin == null){
-        console.log("recusado")
         setToken(null)
       }   
     })

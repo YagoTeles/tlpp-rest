@@ -71,7 +71,6 @@ function PedidosDeCompras() {
         );
     
         let resJSON = await response.json();
-        console.log(resJSON)
         setRows(resJSON)
   
     } catch (err) {
@@ -89,7 +88,6 @@ function PedidosDeCompras() {
           // el can be null - see https://reactjs.org/docs/refs-and-the-dom.html#caveats-with-callback-refs
           if (!el) return;
           
-          console.log(Math.floor(el.getBoundingClientRect().height/64));
           setPageTableSize((Math.floor(el.getBoundingClientRect().height/68)))
         }}
         rows={rows}

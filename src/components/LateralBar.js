@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
 import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
@@ -16,8 +15,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
 import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined';
 import { ColorModeContext } from '../contexts/ColorModeContext'
@@ -25,15 +22,12 @@ import Paper from '@mui/material/Paper';
 import { LogoTotvs } from './LogoTotvs';
 import {matchPath, useLocation, useNavigate } from 'react-router-dom';
 import { itens } from './itens';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import StoreContext from './Store/Context';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import { useContext } from 'react';
+import { useContext,useEffect } from 'react';
+
 
 const drawerWidth = 255;
 
@@ -114,16 +108,42 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
   }),
 );
-
+const style = {
+  width: '100%',
+  maxWidth: 360,
+  bgcolor: 'background.paper',
+};
 export default function MiniDrawer({ children }) {
   const theme = useTheme();
   const colorMode = React.useContext(ColorModeContext);
   const [open, setOpen]  = React.useState(true);
   const routeMatch = useRouteMatch(itens.map((item, index) => {return item.route}));
   const currentTab = routeMatch?.pattern?.path;
+  const { token } = useContext(StoreContext);
   const { setToken } = useContext(StoreContext);
+  const [user, setUser]  = React.useState("");
   const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const getUser = async () => {
+    try {
+        const body = {};
+      
+        const response = await fetch('http://localhost:8282/rest/login/get-user-logged',
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json", 'Authorization': "Bearer " + token},
+            body: JSON.stringify(body),
+  
+        }
+        );
+        let resJSON = await response.json();
+        setUser(resJSON.Nome)
+  
+    } catch (err) {
+        console.error(err.message);
+    }
+  }
 
   const handleChange = (event) => {
     setAuth(event.target.checked);
@@ -137,11 +157,15 @@ export default function MiniDrawer({ children }) {
     setAnchorEl(null);
   };
   const logOut = () =>{
+    setToken(null)
     setAnchorEl(null);
     navigate("/")
 
   }
 
+  useEffect(() => {
+    if(token != null && token != undefined) getUser()
+  }, []);
 
   let title = itens.find(e => e.route === currentTab);
   const navigate = useNavigate();
@@ -154,6 +178,7 @@ export default function MiniDrawer({ children }) {
     setOpen(false);
   };
 
+  
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -202,7 +227,9 @@ export default function MiniDrawer({ children }) {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                <MenuItem onClick={() => logOut()}>Sair</MenuItem>
+                <MenuItem sx={{minWidth: 120,display:'flex',justifyContent:'center'}}><Typography align='center' fontWeight={'bold'}>{user}</Typography></MenuItem>
+                <Divider />
+                <MenuItem onClick={() => logOut()}>LogOut</MenuItem>
               </Menu>
             </div>
           <IconButton
