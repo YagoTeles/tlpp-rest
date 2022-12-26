@@ -25,7 +25,15 @@ import Paper from '@mui/material/Paper';
 import { LogoTotvs } from './LogoTotvs';
 import {matchPath, useLocation, useNavigate } from 'react-router-dom';
 import { itens } from './itens';
-
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import StoreContext from './Store/Context';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import { useContext } from 'react';
 
 const drawerWidth = 255;
 
@@ -113,6 +121,28 @@ export default function MiniDrawer({ children }) {
   const [open, setOpen]  = React.useState(true);
   const routeMatch = useRouteMatch(itens.map((item, index) => {return item.route}));
   const currentTab = routeMatch?.pattern?.path;
+  const { setToken } = useContext(StoreContext);
+  const [auth, setAuth] = React.useState(true);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleChange = (event) => {
+    setAuth(event.target.checked);
+  };
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const logOut = () =>{
+    setAnchorEl(null);
+    navigate("/")
+
+  }
+
+
   let title = itens.find(e => e.route === currentTab);
   const navigate = useNavigate();
 
@@ -141,19 +171,49 @@ export default function MiniDrawer({ children }) {
           >
             
             <MenuIcon />
+            
           </IconButton>
           <Typography variant="h6" noWrap component="div">
               {title.label}
           </Typography>
-
+          <div style={{position:'absolute',right:"2vw"}}>
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={() => logOut()}>Sair</MenuItem>
+              </Menu>
+            </div>
           <IconButton
                   onClick={colorMode.toggleColorMode}
                   color='inherit'
                   size='large'
-                  sx={{position:'absolute',right:"2vw"}}
+                  sx={{position:'absolute',right:"5vw"}}
                 >
                 {theme.palette.mode === 'dark' ? (<WbSunnyOutlinedIcon />):(<DarkModeOutlinedIcon />)}
-            </IconButton>   
+          </IconButton>
+
         </Toolbar>
      
       </AppBar>

@@ -1,3 +1,4 @@
+import * as React from 'react';
 import BodyLogin from "./BodyLogin"
 import { Paper } from "@mui/material";
 import Typography from "@mui/material/Typography";
@@ -10,12 +11,32 @@ import { useState,useEffect, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
 import { LogoTotvs } from "../../components/LogoTotvs";
 import { styled, useTheme } from '@mui/material/styles';
+import Stack from '@mui/material/Stack';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function Login() {
     const { register, handleSubmit, formState: { errors }} = useForm();
     const { setToken } = useContext(StoreContext);
     const theme = useTheme();
     const navigate = useNavigate();
+    const [open, setOpen] = React.useState(false);
+
+    
+    const handleClose = (event, reason) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+
+      setOpen(false);
+    };
+    const onSubmit = data => {
+      enviar(data)
+    }
     const enviar = async (data) => {
         
         try {
@@ -31,21 +52,13 @@ function Login() {
           console.log(resJSON)
           if (!(resJSON.code === 401)){
             setToken(resJSON.access_token)
-            navigate('/pedidos-de-compras')
+            navigate('/pedidos-de-compra')
           }
           else{
             console.log("Usuário errado")
+            setOpen(true);
           }
 
-          
-          /*
-          if (resJSON);
-          else{
-          navigate('/perfil')
-          setToken(resJSON.usertoken)  
-          }
-          */
-  
         } catch (err) {
           console.log(err)
           console.error(err.message);
@@ -69,7 +82,7 @@ function Login() {
                     alignItems="center"
                     gap={2}
                 >
-                    <form onSubmit={handleSubmit((data) => enviar(data))} style={{display:"flex",flexDirection:"column",gap:"10px",width:"100%"}}>
+                    <form onSubmit={handleSubmit(onSubmit)} style={{display:"flex",flexDirection:"column",gap:"10px",width:"100%"}}>
                         <TextField id="user" label="Usuário" variant="outlined" sx={{width:"100%"}}
                         {...register("User", {required: 'Digite nome do usuario'})} 
                         />
@@ -80,6 +93,11 @@ function Login() {
                     </form>
                 </Grid>
             </Paper>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+              <Alert onClose={handleClose} severity="warning" sx={{ width: '100%' }}>
+                Verifique se o usuário e senha estão corretos
+              </Alert>
+            </Snackbar>
         </BodyLogin>
     </>);
 }
