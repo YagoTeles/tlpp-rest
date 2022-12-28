@@ -29,7 +29,7 @@ import Menu from '@mui/material/Menu';
 import { useContext,useEffect } from 'react';
 
 
-const drawerWidth = 255;
+const drawerWidth = 270;
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -262,7 +262,7 @@ export default function MiniDrawer({ children }) {
         </DrawerHeader>
         
         <Divider />
-          {open ? <Typography variant="h6" noWrap component="div" align='center' sx={{ fontWeight: 'bold',paddingTop:1,paddingBottom:1 }}>Compras</Typography> : <></>}
+          {open ? <Typography variant="h6" noWrap component="div" align='center' sx={{ fontWeight: 'bold',paddingTop:1,paddingBottom:1 }}>Compras</Typography> : <div style={{height:"48px"}}></div>}
 
           {itens.map((item, index) => (
             <ListItem key={item.label} disablePadding sx={{ display: 'block' }} onClick={() => open && navigate(item.route)}>

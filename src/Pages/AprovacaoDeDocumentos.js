@@ -6,42 +6,41 @@ import StoreContext from '../components/Store/Context';
 import {localizedTextsMap} from '../components/DataTable/TranslateTabs'
 
 
-
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
-    field: 'Produto',
-    headerName: 'Produto',
+    field: 'Documento',
+    headerName: 'Documento',
     minWidth: 250,
   },
   {
-    field: 'Descricao',
-    headerName: 'Descrição',
-    minWidth: 400,
+    field: 'Tipo',
+    headerName: 'Tipo',
+    minWidth: 100,
   },
   {
-    field: 'Quantidade',
-    headerName: 'Quantidade',
+    field: 'Aprovador',
+    headerName: 'Aprovador',
 
-    minWidth: 110,
+    minWidth: 250,
   },
   {
-    field: 'Preco',
-    headerName: 'Preço',
+    field: 'Status',
+    headerName: 'Status',
     
-    minWidth: 110,
+    minWidth: 250,
   },
   {
-    field: 'Valor',
+    field: 'Total',
     headerName: 'Valor Total',
     
-    minWidth: 110,
+    minWidth: 130,
   },
 ];
 
 
 
-function PedidosDeCompras() {
+function AprovacaoDeDocumentos() {
   const [rows, setRows] = useState([]);
   const { token }= useContext(StoreContext);
   const [pageTableSize, setPageTableSize] = useState(5)
@@ -63,12 +62,12 @@ function PedidosDeCompras() {
     );
     // eslint-disable-next-line
   },[selectdItems]);
-
+ 
   const Teste = async () => {
     try {
         const body = {};
       
-        const response = await fetch('http://localhost:8282/rest/compras/pedidos-de-compras',
+        const response = await fetch('http://localhost:8282/rest/compras/aprovacao-de-documentos',
         {
             method: "POST",
             headers: { "Content-Type": "application/json", 'Authorization': "Bearer " + token},
@@ -91,7 +90,6 @@ function PedidosDeCompras() {
     return ( 
     <Box sx={{ height: "100%", width: '100%' }}>     
       <DataGrid
-        
         rows={rows}
         onSelectionModelChange={selected => setSelectedItems(selected)}
         componentsProps={{
@@ -112,4 +110,4 @@ function PedidosDeCompras() {
      );
 }
 
-export default PedidosDeCompras;
+export default AprovacaoDeDocumentos;

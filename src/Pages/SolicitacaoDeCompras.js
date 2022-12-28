@@ -1,9 +1,9 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid,GridToolbar, GridToolbarContainer,GridToolbarDensitySelector,GridToolbarFilterButton} from '@mui/x-data-grid';
 import { useState,useEffect, useContext } from 'react';
-import { Button } from '@mui/material';
 import StoreContext from '../components/Store/Context';
+import {localizedTextsMap} from '../components/DataTable/TranslateTabs'
 
 
 
@@ -24,6 +24,11 @@ const columns = [
     headerName: 'Descrição',
     minWidth: 400,
   },
+  {
+    field: 'Quantidade',
+    headerName: 'Quantidade',
+    minWidth: 250,
+  },
  
 ];
 
@@ -34,16 +39,23 @@ function SolicitacaoDeCompras() {
   const { token }= useContext(StoreContext);
   const [pageTableSize, setPageTableSize] = useState(5)
   const [height, setHeight] = useState(0);
+  const [selectdItems,setSelectedItems] = useState([]);
+  const [filterButtonEl,setFilterButtonEl] = useState(null);
+  
+  const CustomToolbar = React.useCallback(() => {
+    return (
+      <div className='topoTabela' >
+        <div ref={setFilterButtonEl}></div>
+      <GridToolbarContainer >
 
-  useEffect(() => {
-    const updateWindowDimensions = () => {
-      const newHeight = window.innerHeight;
-      setHeight(newHeight);
-    };
-    window.addEventListener("resize", updateWindowDimensions);
-    return () => window.removeEventListener("resize", updateWindowDimensions) 
+      <GridToolbarDensitySelector/>
+      <GridToolbarFilterButton />
 
-  }, []);
+      </GridToolbarContainer> 
+      </div>
+    );
+    // eslint-disable-next-line
+  },[selectdItems]);
 
   const Teste = async () => {
     try {
@@ -74,18 +86,23 @@ function SolicitacaoDeCompras() {
     <Box sx={{ height: "100%", width: '100%' }}>     
       <DataGrid
         ref={el => {
-          // el can be null - see https://reactjs.org/docs/refs-and-the-dom.html#caveats-with-callback-refs
-          if (!el) return;
-          
-          console.log(Math.floor(el.getBoundingClientRect().height/64));
+          if (!el) return;   
           setPageTableSize((Math.floor(el.getBoundingClientRect().height/68)))
         }}
         rows={rows}
+        onSelectionModelChange={selected => setSelectedItems(selected)}
+        componentsProps={{
+            panel: {
+              anchorEl: filterButtonEl
+            }
+          }}
+        localeText={localizedTextsMap}
         columns={columns}
-        pageSize={pageTableSize}
+        autoPageSize
         rowsPerPageOptions={[pageTableSize]}
         checkboxSelection
         disableSelectionOnClick
+        components={{ Toolbar: CustomToolbar }}
         experimentalFeatures={{ newEditingApi: true }}
       />
     </Box>

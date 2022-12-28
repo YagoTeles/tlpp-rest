@@ -11,16 +11,16 @@ export const itens = [
     },
     {
         label: 'Solicitação de compras',
-        key: 'perfil',
+        key: 'solicitacao-de-compra',
         id:1,
         route: '/solicitacao-de-compras',
         icon: <AddShoppingCartIcon/>,   
     },
     {
-        label: 'Documentos de Entrada',
-        key: 'perfil',
+        label: 'Aprovação de Documentos',
+        key: 'aprovacao-de-documentos',
         id:2,
-        route: '/documentos-de-entrada', 
+        route: '/aprovacao-de-documentos', 
         icon: <ArticleIcon/>,  
     },
 

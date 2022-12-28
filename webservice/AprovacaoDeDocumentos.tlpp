@@ -1,0 +1,58 @@
+#include 'tlpp-core.th'
+#include 'tlpp-rest.th'
+
+@POST("compras/aprovacao-de-documentos")
+Function u_AprovacaoDeDocumentos()
+  //RpcSetEnv("99","01")
+  Local oJson as json
+  Local cQuery := ""
+  Local cSql   := ""
+  Local nCount := 1
+  Local cStatus := ""
+  Local aResposta := {}
+  Local oFim := JsonObject():new()
+  Local cNome := ""
+  cSql := "SELECT CR_NUM,CR_TIPO,CR_APROV,CR_STATUS,CR_TOTAL FROM "+RetSqlName("SCR")
+  cSql += " WHERE CR_FILIAL = '"+xFilial("SCR")+"' AND D_E_L_E_T_<>'*' "
+
+  cQuery := MPSysOpenQuery(cSql)
+
+  (cQuery)->(DbGoTop())
+
+  While ! (cQuery)->(EoF())
+    IF (cQuery)->CR_STATUS== "01"
+        cStatus = "Aguardando nivel anterior"
+    ELSEIF (cQuery)->CR_STATUS == "02"
+        cStatus = "Pendente"
+    ELSEIF (cQuery)->CR_STATUS == "03"
+        cStatus = "Liberado"
+    ELSEIF (cQuery)->CR_STATUS == "04"
+        cStatus = "Bloqueado"
+    ELSEIF (cQuery)->CR_STATUS == "05"
+        cStatus = "Liberado outro aprov"
+    ELSEIF (cQuery)->CR_STATUS == "06"
+        cStatus = "Rejeitado"
+    ELSEIF (cQuery)->CR_STATUS == "07"
+        cStatus = "Rej/Bloq outro aprov"
+    ENDIF
+
+    
+
+    
+    oJson := {"Documento":  AllTrim((cQuery)->CR_NUM)}
+    oJson["Tipo"]        := AllTrim((cQuery)->CR_TIPO)
+    IF Alltrim((cQuery)->CR_APROV) == "000001"
+        oJson["Aprovador"]   := "Administrador"
+    ELSE
+        oJson["Aprovador"]   := AllTrim(UsrRetName((cQuery)->CR_APROV))
+    ENDIF
+    oJson["Status"]      := cStatus
+    oJson["Total"]       := "R$ " + CValToChar(Alltrim(TRANSFORM((cQuery)->CR_TOTAL,"@E 999,999.99")))
+    oJson["id"]          := nCount
+    nCount += 1
+    Aadd(aResposta, oJson)
+    (cQuery)->(DbSkip())
+  ENDDO
+  oFim:set(aResposta)
+  oRest:setResponse(oFim)
+Return .T.
