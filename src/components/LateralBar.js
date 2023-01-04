@@ -21,7 +21,7 @@ import { ColorModeContext } from '../contexts/ColorModeContext'
 import Paper from '@mui/material/Paper';
 import { LogoTotvs } from './LogoTotvs';
 import {matchPath, useLocation, useNavigate } from 'react-router-dom';
-import { itens } from './itens';
+import { itens,itensFat,itensFin } from './itens';
 import StoreContext from './Store/Context';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
@@ -29,7 +29,7 @@ import Menu from '@mui/material/Menu';
 import { useContext,useEffect } from 'react';
 
 
-const drawerWidth = 270;
+const drawerWidth = 260;
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -178,7 +178,32 @@ export default function MiniDrawer({ children }) {
     setOpen(false);
   };
 
-  
+  const montaItens = (itens,nome) => {
+    return(<>
+    {open ? <Typography variant="h6" noWrap component="div" align='center' sx={{ fontWeight: 'bold',paddingTop:1,paddingBottom:1 }}>{nome}</Typography> : <div style={{height:"48px"}}></div>}
+
+          {itens.map((item, index) => (
+            <ListItem key={item.label} disablePadding sx={{ display: 'block' }} onClick={() => open && navigate(item.route)}>
+              <ListItemButton
+                sx={currentTab === item.route ? {minHeight: 48,justifyContent: open ? 'initial' : 'center',px: 2.5,backgroundColor:'action.selected'} : {minHeight: 48,justifyContent: open ? 'initial' : 'center',px: 2.5}}
+                
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 1 : 'auto',
+                    justifyContent: 'center',
+                  }}
+                  
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText primary={item.label} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+    </>)    
+  }
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -262,58 +287,13 @@ export default function MiniDrawer({ children }) {
         </DrawerHeader>
         
         <Divider />
-          {open ? <Typography variant="h6" noWrap component="div" align='center' sx={{ fontWeight: 'bold',paddingTop:1,paddingBottom:1 }}>Compras</Typography> : <div style={{height:"48px"}}></div>}
-
-          {itens.map((item, index) => (
-            <ListItem key={item.label} disablePadding sx={{ display: 'block' }} onClick={() => open && navigate(item.route)}>
-              <ListItemButton
-                sx={currentTab === item.route ? {minHeight: 48,justifyContent: open ? 'initial' : 'center',px: 2.5,backgroundColor:'action.selected'} : {minHeight: 48,justifyContent: open ? 'initial' : 'center',px: 2.5}}
-                
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                  
-                >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText primary={item.label} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        
+        {montaItens(itens,"Compras")}  
         <Divider />
-        {
-          /*
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-       */ 
-        }
+        {montaItens(itensFat,"Faturamento")}
+        <Divider />
+        {montaItens(itensFin,"Financeiro")}
+        <Divider />
+        
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
